@@ -1,0 +1,25 @@
+name: AUTO DEPLOYMENT # workflow 이름
+
+on:
+  push:
+    branches: [ release ] # release 브랜치에 push가 일어났을 경우 jobs 실행
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Github Action에서 실행할 VM 종류, 버전 
+
+    steps:
+      - name: DEPLOYMENT # 수행할 작업 이름
+        uses: appleboy/ssh-action@master # 이를 통해 리눅스 서버에 ssh 접속을 수행
+        env: # 이후에 사용할 환경변수 선언, 이하의 secrets는 repo > Settings > Secret > Action > new repo Secret 에서 key-value 형식으로 등록
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          PORT: ${{ secrets.PORT }}
+        with: 
+          host: $HOST # 접속 서버의 IP
+          username: $USERNAME # 접속 계정 (ex.root)
+          password: $PASSWORD # 접속 계정의 비밀번호
+          port: $PORT # 접속 서버의 SSH 접속용 port
+          # 이하는 접속 후 실행할 스크립트 (ex. cd ~, npm i, pm2 restart ~)
+          script: | 
